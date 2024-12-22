@@ -1,0 +1,94 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link href="{% static "css/create_scene.css" %}" rel="stylesheet">
+</head>
+<body>
+    <div id="main_container">
+        <h1>{% block h1 %}{% endblock %}</h1>
+
+        <form id="main_form" action="{{url}}" method="post">
+            {% csrf_token %}
+            <div>
+                <label for="name">Name:</label> </br>
+                <input type="text" id="name" name="name" value="{{form.name}}" required>
+            </div>
+            <div>
+                <label for="device">Devices (readonly):</label></br>
+                <select id="device" name="device" multiple required disabled="true">
+                    {% for device in devices %}
+                        <option value="{{ device.id }}" {% if device.id in form.device %}selected{% endif %}>
+                            {{ device.name }} : {{device.id}}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="statuses">Statuses (JSON format):</label></br>
+                <textarea id="statuses" name="statuses" required onchange='updateDeviceSelect()' disabled="true">{{form.statuses}}</textarea>
+            </div>
+            <button type="submit">Save</button>
+        </form>
+    <div>
+
+    {% if response_message %}
+        <div class="response-message">
+            {{ response_message }}
+        </div>
+    {% endif %}
+
+    <form id = "option_preview">
+        <h1>Pick a device</h1>
+        <select id="device_preview" name="device_preview">
+            {% for device_p in devices %}
+                <option value="{{ device_p.id }}">
+                    {{ device_p.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label for="toggle_switch">Toggle (Off\On):</label>
+        <label class="switch">
+            <input type="checkbox" id="toggle_switch">
+            <span class="slider"></span>
+        </label><br><br>
+
+        <div id="check_on">
+            <label for="mode_switch">Mode:</label>
+            <div>
+                <span> white </span>
+                <label class="switch">
+                    <input type="checkbox" id="mode_switch">
+                    <span class="slider"></span>
+                </label>
+                <span> color </span>
+            </div>
+            <div id="mode_color">
+                <h1>Pick a color</h1>
+                <label for="color_picker">Choose a Color:</label>
+                <input type="color" id="color_picker" name="color_picker" value="#ff0000"><br><br>
+
+                <label for="color_rgb">Color (RGB):</label>
+                <input type="text" id="color_rgb" name="color_rgb" readonly value='"r": 255, "g": 0, "b": 0'><br><br>
+            </div>
+
+            <div id="mode_white">
+                <label for="hue">Hue (0-100): <span id="hue_value">50</span></label>
+                <input type="range" id="hue" name="hue" min="0" max="100" value="50"><br><br>
+            </div>
+
+            <label for="brightness">Brightness (0-100): <span id="brightness_value">50</span></label>
+            <input type="range" id="brightness" name="brightness" min="0" max="100" value="50"><br><br>
+        </div>
+
+        <button type="button" id="pick_color">PICK</button>
+        <button type="button" id="delete_device">DELETE</button>
+    </form>
+
+    <script src="{% static "js/create_scene.js" %}"></script>
+</body>
+</html>
